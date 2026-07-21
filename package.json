@@ -1,0 +1,54 @@
+{
+  "name": "genkan-ai",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c blue,green \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:all": "concurrently -k -n whisper,api,web -c magenta,blue,green \"npm:dev:whisper\" \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:tailnet": "concurrently -k -n whisper,api,web -c magenta,blue,green \"npm:dev:whisper\" \"npm:dev:api\" \"npm:dev:web:tailnet\"",
+    "dev:local-whisper": "concurrently -k -n whisper,api,web -c magenta,blue,green \"npm:dev:whisper\" \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:tailnet:local-whisper": "concurrently -k -n whisper,api,web -c magenta,blue,green \"npm:dev:whisper\" \"npm:dev:api\" \"npm:dev:web:tailnet\"",
+    "dev:web": "vite",
+    "dev:web:tailnet": "sh scripts/start-tailnet-web.sh",
+    "dev:api": "node --watch --import tsx server/index.ts",
+    "dev:whisper": "sh scripts/start-whisper.sh",
+    "setup:whisper": "sh scripts/setup-whisper.sh",
+    "serve:tailnet": "tailscale serve --bg --yes 4173",
+    "start:api": "node --import tsx server/index.ts",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -b --pretty false",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run build"
+  },
+  "dependencies": {
+    "@fastify/multipart": "^10.1.0",
+    "fastify": "^5.10.0",
+    "lucide-react": "1.25.0",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.4",
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/react": "16.3.2",
+    "@testing-library/user-event": "14.6.1",
+    "@types/node": "26.1.1",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.3",
+    "concurrently": "^10.0.3",
+    "jsdom": "29.1.1",
+    "tsx": "^4.23.1",
+    "typescript": "7.0.2",
+    "vite": "8.1.5",
+    "vitest": "4.1.10"
+  },
+  "engines": {
+    "node": ">=22.12"
+  }
+}
