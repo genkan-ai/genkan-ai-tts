@@ -11,7 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { type FormEvent, useState } from "react";
-import type { TranscriptEntry } from "../domain/visit";
+import type { SpeechVoice, TranscriptEntry } from "../domain/visit";
 import { Transcript } from "./Transcript";
 import { voiceCapturePolicy } from "./voiceCapturePolicy";
 import type { VoicePhase } from "./voiceState";
@@ -21,6 +21,11 @@ const scenarios = [
   "近くで設備点検をしている会社です。ご案内に来ました。",
   "佐藤です。田中さんとの約束で伺いました。",
 ] as const;
+
+const speechVoiceLabels: Record<SpeechVoice, string> = {
+  female: "女性（落ち着いた声）",
+  male: "男性（落ち着いた声）",
+};
 
 const pipelineSteps = [
   { id: "capture", label: "音声入力", icon: Mic },
@@ -72,12 +77,15 @@ interface PresenterPanelProps {
   transcript: TranscriptEntry[];
   isActive: boolean;
   voiceEnabled: boolean;
+  speechVoice: SpeechVoice;
+  settingsSaving: boolean;
   error?: string;
   canPlayAudio: boolean;
   onClose: () => void;
   onSendText: (message: string) => void;
   onStartListening: () => void;
   onPlayAudio: () => void;
+  onSpeechVoiceChange: (voice: SpeechVoice) => void | Promise<void>;
   onEnd: () => void;
 }
 
@@ -87,12 +95,15 @@ export const PresenterPanel = ({
   transcript,
   isActive,
   voiceEnabled,
+  speechVoice,
+  settingsSaving,
   error,
   canPlayAudio,
   onClose,
   onSendText,
   onStartListening,
   onPlayAudio,
+  onSpeechVoiceChange,
   onEnd,
 }: PresenterPanelProps) => {
   const [message, setMessage] = useState("");
@@ -142,6 +153,26 @@ export const PresenterPanel = ({
           {voiceCapturePolicy.trailingSilenceMs / 1_000}秒の無音で自動送信・無発話が
           {voiceCapturePolicy.noSpeechMs / 1_000}秒続くと通話終了
         </p>
+      </section>
+
+      <section className="presenter-panel__section presenter-voice" aria-labelledby="voice-title">
+        <h2 id="voice-title">応答音声</h2>
+        <label>
+          <span>Fish Audio 話者</span>
+          <select
+            aria-label="デモの応答音声"
+            value={speechVoice}
+            disabled={settingsSaving}
+            onChange={(event) => void onSpeechVoiceChange(event.target.value as SpeechVoice)}
+          >
+            {Object.entries(speechVoiceLabels).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <p>{settingsSaving ? "保存中…" : "次のAI応答から反映されます。"}</p>
       </section>
 
       {error ? (

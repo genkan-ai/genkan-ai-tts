@@ -603,7 +603,7 @@ a:focus-visible {
 
 .delivery-settings {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px) auto;
+  grid-template-columns: minmax(0, 1fr) repeat(2, minmax(180px, 250px)) auto;
   gap: 20px;
   align-items: end;
   margin-top: 18px;
@@ -644,6 +644,12 @@ a:focus-visible {
   display: grid;
   gap: 6px;
   font-weight: 700;
+}
+
+.delivery-settings label > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .delivery-settings select {
@@ -1366,6 +1372,41 @@ a:focus-visible {
   color: #7f8786;
   font-size: 10px;
   line-height: 1.65;
+}
+
+.presenter-voice {
+  border-top: 1px solid rgb(255 255 255 / 10%);
+  border-bottom: 1px solid rgb(255 255 255 / 10%);
+}
+
+.presenter-voice label {
+  display: grid;
+  gap: 7px;
+  color: #aeb4b3;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.presenter-voice select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 8px;
+  background: #15191b;
+  padding: 0 11px;
+  color: #f1f3f2;
+  font: inherit;
+}
+
+.presenter-voice select:focus {
+  border-color: rgb(91 204 123 / 58%);
+  outline: 3px solid rgb(91 204 123 / 12%);
+}
+
+.presenter-voice p {
+  margin: 8px 0 0;
+  color: #7f8786;
+  font-size: 10px;
 }
 
 .presenter-pipeline__step {

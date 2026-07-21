@@ -3,9 +3,26 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it } from "vitest";
 import { App } from "./App";
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  window.history.replaceState(null, "", "/");
+});
 
 describe("GenkanAI demo", () => {
+  it("switches the response voice between female and male", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    const residentVoice = screen.getByLabelText("応答音声");
+    expect(residentVoice).toHaveValue("female");
+    await user.selectOptions(residentVoice, "male");
+    expect(residentVoice).toHaveValue("male");
+
+    await user.click(screen.getByRole("button", { name: "来訪者テスト" }));
+    await user.click(screen.getByRole("button", { name: "デモ情報" }));
+    expect(screen.getByLabelText("デモの応答音声")).toHaveValue("male");
+  });
+
   it("edits and keeps a structured resident profile", async () => {
     const user = userEvent.setup();
     render(<App />);

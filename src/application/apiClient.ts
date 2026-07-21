@@ -3,11 +3,12 @@ import type {
   HealthResponse,
   ResidentProfileResponse,
   ResidentSettingsResponse,
+  UpdateResidentSettingsRequest,
   VisitDetailResponse,
   VisitListResponse,
   VisitMutationResponse,
 } from "../domain/api";
-import type { DeliveryPolicy, ResidentProfile, VisitEndReason } from "../domain/visit";
+import type { ResidentProfile, VisitEndReason } from "../domain/visit";
 
 export class ApiClientError extends Error {
   constructor(
@@ -82,11 +83,11 @@ export const residentApi = {
 
   settings: (): Promise<ResidentSettingsResponse> => request("/api/resident/settings"),
 
-  updateSettings: (deliveryPolicy: DeliveryPolicy): Promise<ResidentSettingsResponse> =>
+  updateSettings: (settings: UpdateResidentSettingsRequest): Promise<ResidentSettingsResponse> =>
     request("/api/resident/settings", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ deliveryPolicy }),
+      body: JSON.stringify(settings),
     }),
 
   profile: (): Promise<ResidentProfileResponse> => request("/api/resident/profile"),

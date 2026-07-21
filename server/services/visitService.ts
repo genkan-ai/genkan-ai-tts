@@ -9,10 +9,10 @@ import type { VisitEvent, VisitEventPayloads, VisitEventType } from "../../src/d
 import type {
   AutomatedOutcome,
   CompletionReason,
-  DeliveryPolicy,
   ResidentAutomationSettings,
   ResidentProfile,
   Speaker,
+  SpeechVoice,
   TranscriptEntry,
   VisitClassification,
   VisitSession,
@@ -336,9 +336,13 @@ export class VisitService {
     return this.store.getResidentSettings();
   }
 
-  updateResidentSettings(deliveryPolicy: DeliveryPolicy): ResidentAutomationSettings {
+  updateResidentSettings(
+    updates: Partial<Pick<ResidentAutomationSettings, "deliveryPolicy" | "speechVoice">>,
+  ): ResidentAutomationSettings {
+    const current = this.getResidentSettings();
     const settings = {
-      deliveryPolicy,
+      deliveryPolicy: updates.deliveryPolicy ?? current.deliveryPolicy,
+      speechVoice: updates.speechVoice ?? current.speechVoice,
       updatedAt: this.timestamp(),
     } satisfies ResidentAutomationSettings;
     this.store.saveResidentSettings(settings);
@@ -398,7 +402,8 @@ export class VisitService {
   private async trySynthesize(text: string, session: VisitSession): Promise<string | undefined> {
     try {
       this.emit(session.id, "voice.phase_changed", { phase: "synthesizing" });
-      const result = await this.speechSynthesis.synthesize(text);
+      const voice: SpeechVoice = this.getResidentSettings().speechVoice ?? "female";
+      const result = await this.speechSynthesis.synthesize(text, voice);
       if (!result) return undefined;
       const id = this.audioArtifacts.put(result.audio, result.mimeType);
       return `/api/audio/${id}`;

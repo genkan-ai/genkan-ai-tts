@@ -21,8 +21,13 @@ export const deliveryPolicies = [
 
 export type DeliveryPolicy = (typeof deliveryPolicies)[number];
 
+export const speechVoices = ["female", "male"] as const;
+
+export type SpeechVoice = (typeof speechVoices)[number];
+
 export interface ResidentAutomationSettings {
   deliveryPolicy: DeliveryPolicy;
+  speechVoice?: SpeechVoice;
   updatedAt: string;
 }
 

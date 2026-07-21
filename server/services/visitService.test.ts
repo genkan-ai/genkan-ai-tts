@@ -104,7 +104,7 @@ describe("VisitService", () => {
 
   it("persists a selected delivery policy until the conversation goes quiet", async () => {
     const { service, store } = createFixture();
-    service.updateResidentSettings("leave_at_door");
+    service.updateResidentSettings({ deliveryPolicy: "leave_at_door" });
     const started = await service.startVisit();
     const decided = await service.receiveTurn(started.session.id, {
       text: "山田運輸です。荷物のお届けに来ました。",
@@ -123,6 +123,21 @@ describe("VisitService", () => {
       automatedOutcome: "delivery_instructed",
       summary: { appliedDeliveryPolicy: "leave_at_door", completionReason: "inactivity" },
     });
+    service.close();
+    store.close();
+  });
+
+  it("uses the selected response voice for the next synthesis", async () => {
+    const synthesize = vi.fn(async () => undefined);
+    const { service, store } = createFixture(undefined, undefined, {
+      synthesize,
+      health: async () => true,
+    });
+    service.updateResidentSettings({ speechVoice: "male" });
+
+    await service.startVisit();
+
+    expect(synthesize).toHaveBeenCalledWith("はい。ご用件をお伺いします。", "male");
     service.close();
     store.close();
   });

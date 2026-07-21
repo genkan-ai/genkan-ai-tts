@@ -64,6 +64,7 @@ const speechSynthesis = new FishSpeechSynthesis({
   apiUrl: config.fishApiUrl,
   model: config.fishModel,
   referenceId: config.fishReferenceId,
+  maleReferenceId: config.fishMaleReferenceId,
 });
 const visitService = new VisitService({
   store,

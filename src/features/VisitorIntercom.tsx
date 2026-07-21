@@ -1,7 +1,7 @@
 import { AudioWaveform, BellRing, Code2, LoaderCircle, PhoneOff } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { VisitMutationResponse } from "../domain/api";
-import type { VisitEndReason, VisitSession } from "../domain/visit";
+import type { SpeechVoice, VisitEndReason, VisitSession } from "../domain/visit";
 import { getAudioPlaybackState, setAudioPlaybackState } from "./audioPlaybackGuard";
 import { PresenterPanel } from "./PresenterPanel";
 import { useHalfDuplexRecorder } from "./useHalfDuplexRecorder";
@@ -17,6 +17,9 @@ interface VisitorIntercomProps {
   processingPhase?: ServerVoicePhase;
   audioReadyResponseId?: string;
   apiError?: string;
+  speechVoice?: SpeechVoice;
+  settingsSaving?: boolean;
+  onSpeechVoiceChange?: (voice: SpeechVoice) => void | Promise<void>;
   onOpenResident?: () => void;
 }
 
@@ -30,6 +33,8 @@ const initialPresenterMode = (): boolean => {
   return new URLSearchParams(window.location.search).get("presenter") === "1";
 };
 
+const ignoreSpeechVoiceChange = () => undefined;
+
 export const VisitorIntercom = ({
   session,
   onStart,
@@ -40,6 +45,9 @@ export const VisitorIntercom = ({
   processingPhase,
   audioReadyResponseId,
   apiError,
+  speechVoice = "female",
+  settingsSaving = false,
+  onSpeechVoiceChange = ignoreSpeechVoiceChange,
   onOpenResident,
 }: VisitorIntercomProps) => {
   const [manualAudioUrl, setManualAudioUrl] = useState<string>();
@@ -346,12 +354,15 @@ export const VisitorIntercom = ({
         transcript={session?.transcript ?? []}
         isActive={isActive}
         voiceEnabled={voiceEnabled}
+        speechVoice={speechVoice}
+        settingsSaving={settingsSaving}
         error={recorder.error ?? apiError ?? session?.lastError}
         canPlayAudio={Boolean(manualAudioUrl)}
         onClose={() => setPresenterOpen(false)}
         onSendText={handleSendText}
         onStartListening={beginListening}
         onPlayAudio={playManually}
+        onSpeechVoiceChange={onSpeechVoiceChange}
         onEnd={handleForceEnd}
       />
     </main>

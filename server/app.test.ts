@@ -50,12 +50,17 @@ describe("localhost API", () => {
     const settingsResponse = await app.inject({
       method: "PUT",
       url: "/api/resident/settings",
-      payload: { deliveryPolicy: "delivery_box" },
+      payload: { deliveryPolicy: "delivery_box", speechVoice: "male" },
     });
     const invalidSettingsResponse = await app.inject({
       method: "PUT",
       url: "/api/resident/settings",
       payload: { deliveryPolicy: "custom_free_text" },
+    });
+    const invalidVoiceResponse = await app.inject({
+      method: "PUT",
+      url: "/api/resident/settings",
+      payload: { speechVoice: "robot" },
     });
     const profileBefore = await app.inject({ method: "GET", url: "/api/resident/profile" });
     const profileResponse = await app.inject({
@@ -86,9 +91,10 @@ describe("localhost API", () => {
     expect(startResponse.statusCode).toBe(201);
     expect(residentBefore.json()).toEqual({ visits: [] });
     expect(settingsResponse.json()).toMatchObject({
-      settings: { deliveryPolicy: "delivery_box" },
+      settings: { deliveryPolicy: "delivery_box", speechVoice: "male" },
     });
     expect(invalidSettingsResponse.statusCode).toBe(400);
+    expect(invalidVoiceResponse.statusCode).toBe(400);
     expect(profileBefore.json()).toMatchObject({
       profile: { householdName: "", residentNames: [] },
     });

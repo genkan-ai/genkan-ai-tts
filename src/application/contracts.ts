@@ -3,6 +3,7 @@ import type {
   ConversationOutcome,
   ResidentAutomationSettings,
   ResidentProfile,
+  SpeechVoice,
   TranscriptEntry,
   VisitClassification,
   VisitSession,
@@ -53,7 +54,7 @@ export interface SpeechSynthesisResult {
 }
 
 export interface SpeechSynthesisPort {
-  synthesize(text: string): Promise<SpeechSynthesisResult | undefined>;
+  synthesize(text: string, voice?: SpeechVoice): Promise<SpeechSynthesisResult | undefined>;
   health(): Promise<boolean>;
 }
 
