@@ -50,6 +50,7 @@ export type Speaker = "ai" | "visitor";
 export type CompletionReason =
   | "conversation_complete"
   | "visitor_ended"
+  | "tester_forced"
   | "inactivity"
   | "timeout"
   | "max_turns"
@@ -57,7 +58,7 @@ export type CompletionReason =
   | "llm_failure"
   | "recovered_after_restart";
 
-export type VisitEndReason = "visitor_ended" | "inactivity";
+export type VisitEndReason = "visitor_ended" | "tester_forced" | "inactivity";
 
 export const DEFAULT_MAX_CONVERSATION_TURNS = 8;
 

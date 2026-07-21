@@ -19,7 +19,7 @@
 
 - Desktop concept: `build-week-intercom-desktop-concept.png`
 - Mobile concept: `build-week-intercom-mobile-concept.png`
-- Runtime: Vite test mode served at `127.0.0.1:4174`
+- Runtime: Vite development server at `127.0.0.1:4173`
 - Viewports: 1440 × 1000、390 × 844
 
 ### Fidelity comparison
@@ -35,12 +35,14 @@
 | モバイル配置 | 端末を画面内に収める | 390 × 844で横スクロールなし、主要操作とフッターを表示 | 一致 |
 | モバイル診断 | 必要時だけ全画面パネル | 390px幅で全幅ドロワーとして表示 | 一致 |
 | 端末アイコン | コンセプトはマイク | 実装は呼び出しベル、通話中は波形 | 意図的差分 |
+| テスター操作 | コンセプトには強制終了なし | 通話中だけ端末右上へ小型の赤い `テストを終了` を表示 | 要件による追加 |
 
 ### Above-the-fold copy diff
 
 - Concept: `お話しください` / `呼び出す` / `プレゼンターモード`。
 - Runtime waiting state: `呼び出してください` / `待機中` / `呼び出す`。
 - Runtime active state: `お話しください` / `通話中`。
+- Runtime active utility: テスター用に `テストを終了` を追加。来訪者向け製品UIではなくBuild Week実験画面だけの操作とする。
 - Waiting stateだけ操作を明確にするため `呼び出してください` とし、通話開始後はコンセプトどおり `お話しください` に切り替える。
 
 ### Browser QA evidence
@@ -50,8 +52,11 @@
 - 居住者画面に山田運輸、配達、低リスク、要約、適用した配達方針、次の行動、通知済み状態が表示された。
 - 1440 × 1000と390 × 844の両方でconsole error/warnは0件だった。
 - 390 × 844で `scrollWidth === clientWidth === 390` を確認した。
+- 1440 × 1000と390 × 844の両方で、通話中に `テストを終了` が表示され、押下後に `テスト終了` / `強制終了` / `もう一度呼び出す` へ遷移することを確認した。
+- 強制終了後もconsole error/warnは0件だった。
 
 ### Remaining visual risk
 
 - コンセプト画像の金属・壁面テクスチャは生成画像ほど写実的ではなく、CSSグラデーションで近似している。
 - 実マイク権限と音声プロバイダーを使った表示遷移は、このUI QAではなく既存の音声MVP検証に依存する。
+- 強制終了ボタンはデモ運用上の意図的追加であり、受け入れ済みコンセプト画像には存在しない。

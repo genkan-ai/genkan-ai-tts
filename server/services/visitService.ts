@@ -272,6 +272,18 @@ export class VisitService {
     if (terminal(session)) return { session };
     this.cancelTimeout(session.id);
 
+    if (reason === "tester_forced") {
+      const latestAi = [...session.transcript].reverse().find((entry) => entry.speaker === "ai");
+      const { summary, outcome } = this.summaryForEnd(
+        session,
+        "tester_forced",
+        "テスターが会話を強制終了しました",
+        latestAi?.text ?? "テストを終了しました",
+      );
+      this.finalize(session, summary, outcome, "tester_forced", "completed");
+      return { session };
+    }
+
     if (reason === "inactivity") {
       const latestAi = [...session.transcript].reverse().find((entry) => entry.speaker === "ai");
       const { summary, outcome } = this.summaryForEnd(

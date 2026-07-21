@@ -212,7 +212,7 @@ export const PresenterPanel = ({
           ) : null}
           <button className="is-danger" type="button" disabled={!isActive} onClick={onEnd}>
             <PhoneOff size={16} aria-hidden="true" />
-            会話を終了
+            テストを強制終了
           </button>
         </div>
       </section>

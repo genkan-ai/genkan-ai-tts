@@ -173,6 +173,34 @@ describe("VisitService", () => {
     store.close();
   });
 
+  it("lets a tester force-end immediately without generating another response", async () => {
+    const synthesize = vi.fn(async () => undefined);
+    const { service, store } = createFixture(undefined, undefined, {
+      synthesize,
+      health: async () => true,
+    });
+    const started = await service.startVisit();
+    const transcriptLength = started.session.transcript.length;
+    const synthesisCount = synthesize.mock.calls.length;
+
+    const ended = await service.endVisit(started.session.id, "tester_forced");
+
+    expect(ended.session).toMatchObject({
+      status: "completed",
+      automatedOutcome: "ended",
+      summary: { completionReason: "tester_forced" },
+    });
+    expect(ended.session.transcript).toHaveLength(transcriptLength);
+    expect(synthesize).toHaveBeenCalledTimes(synthesisCount);
+    expect(
+      service
+        .listEvents(started.session.id)
+        .filter((event) => event.type === "notification.requested"),
+    ).toHaveLength(1);
+    service.close();
+    store.close();
+  });
+
   it("ends safely and notifies the resident when local STT fails", async () => {
     const { service, store } = createFixture({
       transcribe: async () => {

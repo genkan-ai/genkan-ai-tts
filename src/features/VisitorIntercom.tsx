@@ -1,4 +1,4 @@
-import { AudioWaveform, BellRing, Code2, LoaderCircle } from "lucide-react";
+import { AudioWaveform, BellRing, Code2, LoaderCircle, PhoneOff } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { VisitMutationResponse } from "../domain/api";
 import type { VisitEndReason, VisitSession } from "../domain/visit";
@@ -224,17 +224,23 @@ export const VisitorIntercom = ({
       .catch(() => recorder.setPhase("error"));
   };
 
-  const handleEnd = () => {
+  const handleForceEnd = () => {
+    activeAudio.current?.pause();
+    activeAudio.current = undefined;
+    setManualAudioUrl(undefined);
     recorder.stop();
-    void Promise.resolve(onEnd("visitor_ended")).catch(() => recorder.setPhase("error"));
+    void Promise.resolve(onEnd("tester_forced")).catch(() => recorder.setPhase("error"));
   };
 
+  const testerForced = session?.summary?.completionReason === "tester_forced";
   const displayText = !session
     ? "呼び出してください"
     : isFinalPlayback || effectivePhase === "playing"
       ? "応答しています"
       : isFinished
-        ? "ありがとうございました"
+        ? testerForced
+          ? "テスト終了"
+          : "ありがとうございました"
         : effectivePhase === "transcribing" ||
             effectivePhase === "thinking" ||
             effectivePhase === "synthesizing"
@@ -249,7 +255,9 @@ export const VisitorIntercom = ({
       ? "最終応答中"
       : isActive
         ? "通話中"
-        : "通話終了";
+        : testerForced
+          ? "強制終了"
+          : "通話終了";
 
   const canStart = !session || (isFinished && !isFinalPlayback && recorder.phase !== "playing");
   const callButtonLabel = !session
@@ -264,6 +272,17 @@ export const VisitorIntercom = ({
     <main className={`intercom-demo${presenterOpen ? " presenter-is-open" : ""}`}>
       <div className="intercom-demo__ambient" aria-hidden="true" />
       <div className="intercom-demo__utility">
+        {isActive ? (
+          <button
+            className="intercom-demo__force-end"
+            type="button"
+            onClick={handleForceEnd}
+            aria-label="テストを強制終了"
+          >
+            <PhoneOff size={17} aria-hidden="true" />
+            テストを終了
+          </button>
+        ) : null}
         <button type="button" onClick={() => setPresenterOpen(true)} aria-expanded={presenterOpen}>
           <Code2 size={18} aria-hidden="true" />
           デモ情報
@@ -333,7 +352,7 @@ export const VisitorIntercom = ({
         onSendText={handleSendText}
         onStartListening={beginListening}
         onPlayAudio={playManually}
-        onEnd={handleEnd}
+        onEnd={handleForceEnd}
       />
     </main>
   );

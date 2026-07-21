@@ -166,9 +166,9 @@ export const createApp = async (options: CreateAppOptions): Promise<FastifyInsta
     "/api/visits/:id/end",
     async (request, reply) => {
       const reason = request.body?.reason ?? "visitor_ended";
-      if (!["visitor_ended", "inactivity"].includes(reason)) {
+      if (!["visitor_ended", "tester_forced", "inactivity"].includes(reason)) {
         return reply.status(400).send({
-          error: "End reason must be visitor_ended or inactivity",
+          error: "End reason must be visitor_ended, tester_forced, or inactivity",
           code: "INVALID_END_REASON",
         });
       }

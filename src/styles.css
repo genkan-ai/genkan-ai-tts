@@ -1010,6 +1010,8 @@ a:focus-visible {
   z-index: 30;
   top: 22px;
   right: 24px;
+  display: flex;
+  gap: 8px;
 }
 
 .intercom-demo.presenter-is-open .intercom-demo__utility {
@@ -1036,6 +1038,16 @@ a:focus-visible {
 .intercom-demo__footer button:hover {
   border-color: rgb(240 181 93 / 58%);
   color: #ffd69b;
+}
+
+.intercom-demo__utility .intercom-demo__force-end {
+  border-color: rgb(232 142 120 / 38%);
+  color: #efae9d;
+}
+
+.intercom-demo__utility .intercom-demo__force-end:hover {
+  border-color: rgb(232 142 120 / 72%);
+  color: #ffd1c5;
 }
 
 .intercom-device {

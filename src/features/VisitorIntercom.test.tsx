@@ -133,4 +133,23 @@ describe("VisitorIntercom TTS playback", () => {
     expect(screen.getByRole("button", { name: "呼び出す" })).toBeEnabled();
     expect(screen.queryByText("AI")).toBeNull();
   });
+
+  it("lets the tester force-end an active call", async () => {
+    const user = userEvent.setup();
+    const onEnd = vi.fn();
+    vi.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(() => undefined);
+    render(
+      <VisitorIntercom
+        session={{ ...session, pendingAudioUrl: undefined }}
+        onStart={vi.fn()}
+        onSend={vi.fn()}
+        onEnd={onEnd}
+        voiceEnabled={false}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "テストを強制終了" }));
+
+    expect(onEnd).toHaveBeenCalledWith("tester_forced");
+  });
 });
