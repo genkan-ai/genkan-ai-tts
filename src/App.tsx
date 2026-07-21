@@ -161,6 +161,7 @@ const AppShell = ({
             processingPhase={controller.serverVoicePhase}
             audioReadyResponseId={controller.audioReadyResponseId}
             apiError={controller.error}
+            onOpenResident={() => setView("resident")}
           />
         )}
       </div>

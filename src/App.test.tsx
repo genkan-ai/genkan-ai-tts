@@ -27,14 +27,15 @@ describe("GenkanAI demo", () => {
 
     await user.click(screen.getByRole("button", { name: "来訪者テスト" }));
     await user.click(screen.getByRole("button", { name: "呼び出す" }));
+    await user.click(screen.getByRole("button", { name: "デモ情報" }));
     await user.type(
-      screen.getByLabelText("ご用件を入力"),
+      screen.getByLabelText("テキスト代替入力"),
       "山田運輸です。荷物のお届けに来ました。",
     );
     await user.click(screen.getByRole("button", { name: "送信" }));
 
     expect(screen.getByText("ご用件を承りました。こちらでお伝えします。")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "居住者画面" }));
+    await user.click(screen.getByRole("button", { name: "居住者画面を開く" }));
 
     expect(screen.getByRole("heading", { name: "山田運輸" })).toBeInTheDocument();
     expect(screen.getByText("配達")).toBeInTheDocument();

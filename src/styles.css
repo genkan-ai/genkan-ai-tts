@@ -33,7 +33,8 @@ body {
 }
 
 button,
-input {
+input,
+textarea {
   font: inherit;
 }
 
@@ -958,272 +959,621 @@ a:focus-visible {
   font-size: 17px;
 }
 
-.visitor-page {
-  width: min(680px, calc(100% - 40px));
-  margin: 0 auto;
-  padding: 40px 0 56px;
+.app-shell--visitor {
+  display: block;
+  min-height: 100svh;
+  background: #111315;
 }
 
-.visitor-header {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  margin-bottom: 27px;
+.app-shell--visitor .app-sidebar,
+.app-shell--visitor .mobile-app-bar,
+.app-shell--visitor .health-link {
+  display: none;
 }
 
-.visitor-header h1 {
-  margin: 0;
-  font-size: 30px;
-  letter-spacing: -0.04em;
+.app-shell--visitor .app-content {
+  grid-column: auto;
 }
 
-.visitor-header p {
-  margin: 3px 0 0;
-  color: var(--muted);
-  font-size: 14px;
-}
-
-.visitor-call-card {
+.intercom-demo {
+  position: relative;
+  isolation: isolate;
   display: grid;
+  min-height: 100svh;
   place-items: center;
-  min-height: 470px;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 42px;
-  color: var(--primary);
-  text-align: center;
-  box-shadow: var(--shadow);
-}
-
-.visitor-call-card h2 {
-  margin: 20px 0 8px;
-  color: var(--text);
-  font-size: 24px;
-}
-
-.visitor-call-card > p {
-  width: min(420px, 100%);
-  margin: 0 0 28px;
-  color: var(--muted);
-  line-height: 1.7;
-}
-
-.privacy-note {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  margin-top: 18px;
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.visitor-session {
   overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 17px;
-  box-shadow: var(--shadow);
+  padding: 42px 76px 58px;
+  background:
+    radial-gradient(circle at 50% 46%, rgb(255 255 255 / 6%), transparent 42%),
+    linear-gradient(90deg, #0a0c0e 0, #17191c 16%, #1d2023 50%, #15171a 84%, #090b0d 100%);
+  color: #f5f6f6;
+  transition: padding-right 240ms ease;
 }
 
-.visitor-session__status {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border);
-  padding: 14px 18px;
-  color: var(--safe);
-  font-size: 13px;
-  font-weight: 800;
+.intercom-demo.presenter-is-open {
+  padding-right: 430px;
 }
 
-.visitor-session__status > span:first-child {
+.intercom-demo__ambient {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 188px, rgb(255 255 255 / 3%) 189px 190px),
+    repeating-linear-gradient(90deg, transparent 0 510px, rgb(255 255 255 / 3%) 511px 513px),
+    radial-gradient(circle at 11% 92%, rgb(82 103 66 / 12%), transparent 15%);
+  opacity: 0.85;
+}
+
+.intercom-demo__utility {
+  position: fixed;
+  z-index: 30;
+  top: 22px;
+  right: 24px;
+}
+
+.intercom-demo.presenter-is-open .intercom-demo__utility {
+  display: none;
+}
+
+.intercom-demo__utility button,
+.intercom-demo__footer button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-}
-
-.visitor-session__mode {
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.visitor-session__lead {
-  display: flex;
-  gap: 13px;
-  border-bottom: 1px solid var(--border);
-  padding: 19px;
-  color: var(--safe);
-}
-
-.visitor-session__lead h2 {
-  margin: 0;
-  color: var(--text);
-  font-size: 18px;
-}
-
-.visitor-session__lead p {
-  margin: 6px 0 0;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-.voice-stage {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 13px;
-  border-bottom: 1px solid var(--border);
-  background: #f8faf9;
-  padding: 14px 18px;
-}
-
-.voice-stage__icon {
-  display: grid;
-  width: 46px;
-  height: 46px;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--safe-surface);
-  color: var(--safe);
-}
-
-.voice-stage--recording .voice-stage__icon,
-.voice-stage--listening .voice-stage__icon {
-  background: #fff2e9;
-  color: var(--primary);
-  animation: live-pulse 1.8s ease-out infinite;
-}
-
-.voice-stage--error .voice-stage__icon {
-  background: var(--risk-surface);
-  color: var(--risk);
-}
-
-.voice-stage > div {
-  display: grid;
-  gap: 3px;
-}
-
-.voice-stage strong {
-  font-size: 14px;
-}
-
-.voice-stage span {
-  color: var(--muted);
-  font-size: 11px;
-}
-
-.voice-stage button {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 36px;
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  background: #fff;
-  padding: 0 11px;
-  color: var(--text);
+  border: 1px solid rgb(255 255 255 / 20%);
+  border-radius: 8px;
+  background: rgb(18 21 23 / 72%);
+  padding: 10px 14px;
+  color: #e8e9e9;
   cursor: pointer;
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 13px;
+  font-weight: 750;
+  backdrop-filter: blur(16px);
 }
 
-.voice-stage button:hover {
-  border-color: var(--primary);
-  color: var(--primary);
+.intercom-demo__utility button:hover,
+.intercom-demo__footer button:hover {
+  border-color: rgb(240 181 93 / 58%);
+  color: #ffd69b;
 }
 
-.voice-stage__spinner {
+.intercom-device {
+  position: relative;
+  display: flex;
+  width: clamp(326px, 29vw, 410px);
+  aspect-ratio: 0.62;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #55595c;
+  border-radius: 21px;
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 8%), transparent 18%),
+    linear-gradient(165deg, #323538 0%, #25282b 58%, #1b1d20 100%);
+  padding: 72px 50px 28px;
+  box-shadow:
+    0 36px 74px rgb(0 0 0 / 55%),
+    0 4px 9px rgb(0 0 0 / 72%),
+    inset 0 1px rgb(255 255 255 / 14%),
+    inset 0 0 0 4px #16181a;
+}
+
+.intercom-device::before {
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgb(255 255 255 / 7%);
+  border-radius: 16px;
+  content: "";
+  pointer-events: none;
+}
+
+.intercom-device__sensor {
+  position: absolute;
+  top: 28px;
+  width: 8px;
+  height: 18px;
+  border-radius: 99px;
+  background: #08090a;
+  box-shadow: inset 0 1px 2px #000;
+}
+
+.intercom-display {
+  display: grid;
+  width: 100%;
+  min-height: 148px;
+  place-items: center;
+  align-content: center;
+  border: 1px solid #5d6063;
+  border-radius: 9px;
+  background: radial-gradient(circle at 50% 50%, rgb(51 139 91 / 9%), transparent 66%), #080d0f;
+  padding: 22px 18px 14px;
+  box-shadow:
+    inset 0 0 18px #000,
+    0 0 0 4px #151719;
+  text-align: center;
+}
+
+.intercom-display strong {
+  color: #e8e9e9;
+  font-size: clamp(19px, 1.8vw, 27px);
+  font-weight: 650;
+  letter-spacing: 0.025em;
+}
+
+.intercom-display > span {
+  color: #7f8985;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+}
+
+.intercom-display.is-error strong {
+  color: #e2ac9c;
+}
+
+.intercom-waveform {
+  display: flex;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  margin: 10px 0 8px;
+}
+
+.intercom-waveform i {
+  display: block;
+  width: 2px;
+  max-height: 34px;
+  border-radius: 2px;
+  background: #40aa68;
+  opacity: 0.72;
+  transform: scaleY(0.48);
+}
+
+.intercom-display.is-listening .intercom-waveform i,
+.intercom-display.is-recording .intercom-waveform i,
+.intercom-display.is-playing .intercom-waveform i {
+  animation: intercom-wave 1.15s ease-in-out infinite alternate;
+}
+
+.intercom-waveform i:nth-child(3n + 2) {
+  animation-delay: -420ms !important;
+}
+
+.intercom-waveform i:nth-child(4n) {
+  animation-delay: -770ms !important;
+}
+
+.intercom-speaker {
+  display: grid;
+  width: min(255px, 92%);
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px 14px;
+  margin: 47px 0 34px;
+}
+
+.intercom-speaker i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #090a0b;
+  box-shadow:
+    inset 0 1px 2px #000,
+    0 1px rgb(255 255 255 / 5%);
+}
+
+.intercom-status-light {
+  width: 36px;
+  height: 5px;
+  border-radius: 9px;
+  background: #59605c;
+  transition:
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.intercom-status-light.is-active {
+  background: #7cf29a;
+  box-shadow: 0 0 13px rgb(112 244 147 / 78%);
+}
+
+.intercom-call-button {
+  display: grid;
+  width: 118px;
+  height: 118px;
+  place-items: center;
+  margin-top: 26px;
+  border: 2px solid #e7a955;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 28%, #383838 0, #242424 44%, #151515 100%);
+  color: #ffd493;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 7px #18191a,
+    0 0 0 9px #6a4b2c,
+    0 0 24px rgb(255 184 87 / 34%),
+    inset 0 1px 2px rgb(255 255 255 / 20%);
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.intercom-call-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 7px #18191a,
+    0 0 0 9px #9a6c36,
+    0 0 34px rgb(255 184 87 / 52%);
+}
+
+.intercom-call-button:active:not(:disabled) {
+  transform: translateY(1px) scale(0.985);
+}
+
+.intercom-call-button:disabled {
+  cursor: default;
+}
+
+.intercom-call-button.is-active {
+  border-color: #77d894;
+  color: #9cf5b4;
+  box-shadow:
+    0 0 0 7px #18191a,
+    0 0 0 9px #33583e,
+    0 0 24px rgb(94 217 127 / 24%);
+}
+
+.intercom-call-button__spinner {
   animation: voice-spin 0.9s linear infinite;
 }
 
-.voice-error {
+.intercom-call-label {
+  margin-top: 24px;
+  color: #d8d9d9;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.intercom-device__microphone {
+  position: absolute;
+  bottom: 24px;
+  width: 31px;
+  height: 5px;
+  border-radius: 8px;
+  background: #090a0b;
+  box-shadow: inset 0 1px 2px #000;
+}
+
+.intercom-demo__footer {
+  position: fixed;
+  z-index: 12;
+  right: 24px;
+  bottom: 20px;
+  left: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: rgb(255 255 255 / 48%);
+  font-size: 11px;
+}
+
+.intercom-demo.presenter-is-open .intercom-demo__footer {
+  right: 410px;
+}
+
+.intercom-demo__footer button {
+  border: 0;
+  background: transparent;
+  padding: 7px 0;
+  color: rgb(255 255 255 / 58%);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  backdrop-filter: none;
+}
+
+.presenter-panel {
+  position: fixed;
+  z-index: 40;
+  inset: 0 0 0 auto;
+  width: 390px;
+  overflow-y: auto;
+  border-left: 1px solid rgb(255 255 255 / 12%);
+  background: rgb(13 16 18 / 96%);
+  color: #eef0f0;
+  box-shadow: -24px 0 60px rgb(0 0 0 / 35%);
+  backdrop-filter: blur(24px);
+}
+
+.presenter-panel__header {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  display: flex;
+  height: 68px;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgb(255 255 255 / 10%);
+  background: rgb(13 16 18 / 92%);
+  padding: 0 20px;
+  backdrop-filter: blur(20px);
+}
+
+.presenter-panel__header > div,
+.presenter-panel__header button {
+  display: inline-flex;
+  align-items: center;
+}
+
+.presenter-panel__header > div {
+  gap: 10px;
+}
+
+.presenter-panel__header strong {
+  font-size: 15px;
+  letter-spacing: 0.01em;
+}
+
+.presenter-panel__header button {
+  width: 36px;
+  height: 36px;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #d5d7d7;
+  cursor: pointer;
+}
+
+.presenter-panel__header button:hover {
+  background: rgb(255 255 255 / 8%);
+}
+
+.presenter-panel__section {
+  padding: 21px 20px;
+}
+
+.presenter-panel__section h2 {
+  margin: 0 0 14px;
+  color: #c7cbcb;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.presenter-pipeline {
+  display: grid;
+  gap: 9px;
   margin: 0;
-  border-bottom: 1px solid #f2caca;
-  background: var(--risk-surface);
-  padding: 11px 18px;
-  color: var(--risk);
-  font-size: 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.presenter-capture-policy {
+  margin: 12px 2px 0;
+  color: #7f8786;
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+.presenter-pipeline__step {
+  display: grid;
+  min-height: 54px;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid rgb(255 255 255 / 7%);
+  border-radius: 9px;
+  background: rgb(255 255 255 / 4%);
+  padding: 0 13px;
+  color: #b7bbbb;
+}
+
+.presenter-pipeline__step > span {
+  font-size: 13px;
   font-weight: 700;
+}
+
+.presenter-pipeline__step strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #777e7d;
+  font-size: 10px;
+}
+
+.presenter-pipeline__step strong i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentcolor;
+}
+
+.presenter-pipeline__step.is-active {
+  border-color: rgb(91 204 123 / 24%);
+  color: #f3f5f4;
+}
+
+.presenter-pipeline__step.is-active strong,
+.presenter-pipeline__step.is-complete strong {
+  color: #51ca76;
+}
+
+.presenter-pipeline__step.is-error strong {
+  color: #e88e78;
+}
+
+.presenter-panel__error {
+  margin: 0 20px 18px;
+  border: 1px solid rgb(232 142 120 / 25%);
+  border-radius: 8px;
+  background: rgb(151 61 42 / 14%);
+  padding: 10px 12px;
+  color: #efae9d;
+  font-size: 11px;
   line-height: 1.55;
 }
 
-.transcript--compact {
-  max-height: 340px;
+.presenter-log {
+  border-block: 1px solid rgb(255 255 255 / 10%);
+}
+
+.presenter-log summary {
+  display: flex;
+  min-height: 54px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  list-style: none;
+}
+
+.presenter-log summary::-webkit-details-marker {
+  display: none;
+}
+
+.presenter-log[open] summary svg {
+  transform: rotate(180deg);
+}
+
+.presenter-log__body {
+  min-height: 170px;
+  max-height: 310px;
+  overflow-y: auto;
+  border-top: 1px solid rgb(255 255 255 / 8%);
+  background: #0b0d0f;
+}
+
+.presenter-log__body > p {
+  margin: 0;
+  padding: 70px 34px;
+  color: #737979;
+  font-size: 11px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.presenter-log .transcript--compact {
+  max-height: none;
   gap: 0;
   padding: 0;
 }
 
-.transcript--compact .transcript__row {
-  grid-template-columns: 58px minmax(0, 1fr);
-  border-top: 1px solid #eceeef;
-  padding: 15px 18px;
+.presenter-log .transcript__row {
+  grid-template-columns: 46px minmax(0, 1fr);
+  gap: 8px;
+  border-top: 1px solid rgb(255 255 255 / 7%);
+  padding: 12px 15px;
 }
 
-.transcript--compact .transcript__row:first-child {
+.presenter-log .transcript__row:first-child {
   border-top: 0;
 }
 
-.visitor-input-panel {
-  margin-top: 16px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 17px;
+.presenter-log .transcript__speaker {
+  color: #8f9695;
+  font-size: 10px;
 }
 
-.visitor-input-panel label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 13px;
-  font-weight: 800;
+.presenter-log .transcript__row--ai .transcript__speaker {
+  color: #51ca76;
 }
 
-.visitor-input-panel__row {
+.presenter-log .transcript__row p {
+  color: #d2d5d5;
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.presenter-controls {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px;
+  gap: 12px;
 }
 
-.example-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  margin-top: 12px;
+.presenter-scenarios {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin: 0;
   border: 0;
   padding: 0;
 }
 
-.example-actions button {
-  border: 0;
-  border-radius: 6px;
-  background: var(--surface);
-  padding: 7px 9px;
-  color: var(--muted);
+.presenter-scenarios button,
+.presenter-controls form button,
+.presenter-controls__actions button {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 7px;
+  background: rgb(255 255 255 / 5%);
+  color: #c9cccc;
   cursor: pointer;
   font-size: 10px;
+  font-weight: 750;
 }
 
-.example-actions button:hover {
-  color: var(--text);
+.presenter-scenarios button:hover:not(:disabled),
+.presenter-controls__actions button:hover:not(:disabled) {
+  border-color: rgb(240 181 93 / 52%);
+  color: #ffd69b;
 }
 
-.visitor-resident-link,
-.visitor-end {
-  width: 100%;
-  margin-top: 16px;
+.presenter-scenarios button:disabled,
+.presenter-controls form button:disabled,
+.presenter-controls__actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.38;
 }
 
-.visitor-playback-wait {
-  margin: 16px 0 0;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--surface);
-  padding: 13px 16px;
-  color: var(--muted);
-  text-align: center;
-  font-size: 12px;
-  font-weight: 700;
+.presenter-controls form {
+  display: grid;
+  gap: 7px;
+}
+
+.presenter-controls form label {
+  color: #959b9a;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.presenter-controls textarea {
+  min-height: 70px;
+  resize: vertical;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 7px;
+  background: #090b0c;
+  padding: 10px;
+  color: #eef0f0;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.presenter-controls form button {
+  justify-self: end;
+  padding: 0 14px;
+  border-color: #9a6c36;
+  background: #6f4b23;
+  color: #fff1dd;
+}
+
+.presenter-controls__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.presenter-controls__actions button {
+  padding: 0 9px;
+}
+
+.presenter-controls__actions button.is-danger {
+  color: #e99a87;
 }
 
 @keyframes live-pulse {
@@ -1242,10 +1592,25 @@ a:focus-visible {
   }
 }
 
+@keyframes intercom-wave {
+  from {
+    opacity: 0.45;
+    transform: scaleY(0.38);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
 @media (max-width: 980px) {
   .app-shell {
     display: block;
     padding-top: 70px;
+  }
+
+  .app-shell--visitor {
+    padding-top: 0;
   }
 
   .app-sidebar {
@@ -1317,6 +1682,14 @@ a:focus-visible {
     border-top: 1px solid var(--border);
     border-left: 0;
   }
+
+  .intercom-demo.presenter-is-open {
+    padding-right: 76px;
+  }
+
+  .intercom-demo.presenter-is-open .intercom-demo__footer {
+    right: 24px;
+  }
 }
 
 @media (max-width: 620px) {
@@ -1324,8 +1697,7 @@ a:focus-visible {
     padding-inline: 14px;
   }
 
-  .resident-main,
-  .visitor-page {
+  .resident-main {
     width: calc(100% - 24px);
   }
 
@@ -1412,32 +1784,6 @@ a:focus-visible {
     justify-self: start;
   }
 
-  .visitor-header {
-    margin-bottom: 18px;
-  }
-
-  .visitor-call-card {
-    min-height: 430px;
-    padding: 30px 22px;
-  }
-
-  .visitor-input-panel__row {
-    grid-template-columns: 1fr;
-  }
-
-  .visitor-input-panel__row .button {
-    width: 100%;
-  }
-
-  .voice-stage {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-
-  .voice-stage button {
-    grid-column: 1 / -1;
-    justify-content: center;
-  }
-
   .transcript--compact .transcript__row {
     grid-template-columns: 45px minmax(0, 1fr);
     padding: 14px;
@@ -1445,6 +1791,77 @@ a:focus-visible {
 
   .health-link {
     display: none;
+  }
+
+  .intercom-demo,
+  .intercom-demo.presenter-is-open {
+    min-height: 100svh;
+    place-items: start center;
+    overflow-y: auto;
+    padding: 78px 12px 68px;
+  }
+
+  .intercom-demo__utility {
+    top: 14px;
+    right: 14px;
+  }
+
+  .intercom-demo__utility button {
+    padding: 9px 11px;
+    font-size: 11px;
+  }
+
+  .intercom-device {
+    width: min(82vw, 330px);
+    min-height: min(610px, calc(100svh - 150px));
+    aspect-ratio: auto;
+    border-radius: 18px;
+    padding: 59px 38px 28px;
+  }
+
+  .intercom-device__sensor {
+    top: 23px;
+  }
+
+  .intercom-display {
+    min-height: 125px;
+    padding: 18px 14px 11px;
+  }
+
+  .intercom-display strong {
+    font-size: clamp(17px, 5.3vw, 22px);
+  }
+
+  .intercom-waveform {
+    height: 32px;
+    margin-block: 7px 5px;
+  }
+
+  .intercom-speaker {
+    gap: 8px 12px;
+    margin: 33px 0 25px;
+  }
+
+  .intercom-call-button {
+    width: 94px;
+    height: 94px;
+    margin-top: 20px;
+  }
+
+  .intercom-call-label {
+    margin-top: 19px;
+    font-size: 15px;
+  }
+
+  .intercom-demo__footer,
+  .intercom-demo.presenter-is-open .intercom-demo__footer {
+    right: 14px;
+    bottom: 12px;
+    left: 14px;
+  }
+
+  .presenter-panel {
+    width: min(100vw, 390px);
   }
 }
 
