@@ -24,7 +24,7 @@ const scenarios = [
 
 const speechVoiceLabels: Record<SpeechVoice, string> = {
   female: "女性（落ち着いた声）",
-  male: "男性（落ち着いた声）",
+  male: "男性（明瞭で通る声）",
 };
 
 const pipelineSteps = [

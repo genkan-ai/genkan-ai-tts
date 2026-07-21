@@ -42,7 +42,7 @@ describe("loadConfig", () => {
     expect(loadConfig({})).toMatchObject({
       fishModel: "s2.1-pro-free",
       fishReferenceId: "0089dce5fefb4c6ba9b9f2f0debe1ddc",
-      fishMaleReferenceId: "6b1baee70ebe4e20b326b2f5f804eeb4",
+      fishMaleReferenceId: "fa7a9c54f30b4cbdba742f77777173b2",
     });
     expect(loadConfig({ FISH_AUDIO_REFERENCE_ID: "another-public-voice" }).fishReferenceId).toBe(
       "another-public-voice",

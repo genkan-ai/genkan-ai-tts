@@ -64,7 +64,7 @@ const geminiReasoningEffortFromEnv = (value: string | undefined): GeminiReasonin
 
 export const DEFAULT_FISH_MODEL = "s2.1-pro-free";
 export const DEFAULT_FISH_REFERENCE_ID = "0089dce5fefb4c6ba9b9f2f0debe1ddc";
-export const DEFAULT_FISH_MALE_REFERENCE_ID = "6b1baee70ebe4e20b326b2f5f804eeb4";
+export const DEFAULT_FISH_MALE_REFERENCE_ID = "fa7a9c54f30b4cbdba742f77777173b2";
 
 export const loadConfig = (env: NodeJS.ProcessEnv = process.env): AppConfig => ({
   host: "127.0.0.1",

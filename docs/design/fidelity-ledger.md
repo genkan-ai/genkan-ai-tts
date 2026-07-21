@@ -44,7 +44,7 @@
 - Runtime waiting state: `呼び出してください` / `待機中` / `呼び出す`。
 - Runtime active state: `お話しください` / `通話中`。
 - Runtime active utility: テスター用に `テストを終了` を追加。来訪者向け製品UIではなくBuild Week実験画面だけの操作とする。
-- Presenter panel: `応答音声` / `女性（落ち着いた声）` / `男性（落ち着いた声）` を追加し、次の応答から反映することを明示した。
+- Presenter panel: `応答音声` / `女性（落ち着いた声）` / `男性（明瞭で通る声）` を追加し、次の応答から反映することを明示した。
 - Waiting stateだけ操作を明確にするため `呼び出してください` とし、通話開始後はコンセプトどおり `お話しください` に切り替える。
 
 ### Browser QA evidence

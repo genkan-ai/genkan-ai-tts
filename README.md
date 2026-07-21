@@ -41,7 +41,7 @@ GROQ_WHISPER_MODEL=whisper-large-v3-turbo
 FISH_AUDIO_API_KEY=...
 FISH_AUDIO_MODEL=s2.1-pro-free
 FISH_AUDIO_FEMALE_REFERENCE_ID=0089dce5fefb4c6ba9b9f2f0debe1ddc
-FISH_AUDIO_MALE_REFERENCE_ID=6b1baee70ebe4e20b326b2f5f804eeb4
+FISH_AUDIO_MALE_REFERENCE_ID=fa7a9c54f30b4cbdba742f77777173b2
 ```
 
 `gemini-3.1-flash-lite` は高頻度・低コスト用途向けの安定版で、無料枠対象モデルです。Google AI Studioの
@@ -56,7 +56,7 @@ GroqはOpenAI互換の音声転写APIを使用し、日本語を明示して送�
 
 Fish Audioの読み上げエンジンは`S2.1 Pro Free`のまま、居住者設定またはデモ情報から
 公開日本語音声の女性（`0089dce5fefb4c6ba9b9f2f0debe1ddc`）と男性
-（`6b1baee70ebe4e20b326b2f5f804eeb4`）を切り替えられます。既存の
+（`fa7a9c54f30b4cbdba742f77777173b2`、明瞭で自信のある中年男性音声）を切り替えられます。既存の
 `FISH_AUDIO_REFERENCE_ID`は女性音声の後方互換設定として引き続き使用できます。
 公開モデルの提供状況や利用条件はFish Audio側で変更される可能性があるため、製品化前に再確認してください。
 
