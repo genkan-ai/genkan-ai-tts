@@ -16,6 +16,7 @@ import {
   deliveryPolicies,
   RESIDENT_PROFILE_MAX_NAME_LENGTH,
   RESIDENT_PROFILE_MAX_RESIDENTS,
+  speechVoices,
   type VisitEndReason,
 } from "../src/domain/visit";
 import type { SqliteStore } from "./adapters/sqliteStore";
@@ -166,9 +167,9 @@ export const createApp = async (options: CreateAppOptions): Promise<FastifyInsta
     "/api/visits/:id/end",
     async (request, reply) => {
       const reason = request.body?.reason ?? "visitor_ended";
-      if (!["visitor_ended", "inactivity"].includes(reason)) {
+      if (!["visitor_ended", "tester_forced", "inactivity"].includes(reason)) {
         return reply.status(400).send({
-          error: "End reason must be visitor_ended or inactivity",
+          error: "End reason must be visitor_ended, tester_forced, or inactivity",
           code: "INVALID_END_REASON",
         });
       }
@@ -220,14 +221,19 @@ export const createApp = async (options: CreateAppOptions): Promise<FastifyInsta
 
   app.put("/api/resident/settings", async (request, reply) => {
     const body = request.body as UpdateResidentSettingsRequest | undefined;
-    if (!body || !deliveryPolicies.includes(body.deliveryPolicy)) {
+    const hasUpdate = body?.deliveryPolicy !== undefined || body?.speechVoice !== undefined;
+    const validDeliveryPolicy =
+      body?.deliveryPolicy === undefined || deliveryPolicies.includes(body.deliveryPolicy);
+    const validSpeechVoice =
+      body?.speechVoice === undefined || speechVoices.includes(body.speechVoice);
+    if (!body || !hasUpdate || !validDeliveryPolicy || !validSpeechVoice) {
       return reply.status(400).send({
-        error: "Unsupported delivery policy",
-        code: "INVALID_DELIVERY_POLICY",
+        error: "Unsupported resident setting",
+        code: "INVALID_RESIDENT_SETTING",
       });
     }
     return reply.send({
-      settings: options.visitService.updateResidentSettings(body.deliveryPolicy),
+      settings: options.visitService.updateResidentSettings(body),
     } satisfies ResidentSettingsResponse);
   });
 

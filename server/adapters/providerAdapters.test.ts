@@ -68,18 +68,20 @@ describe("external provider adapters", () => {
     ).toContain("応対側:");
   });
 
-  it("sends the Fish model as a header and keeps the voice reference configurable", async () => {
-    const fetchImpl = vi.fn<typeof fetch>().mockResolvedValue(
-      new Response(new Uint8Array([1, 2, 3]), {
-        status: 200,
-        headers: { "Content-Type": "audio/mpeg" },
-      }),
+  it("sends the Fish model and switches between configured voice references", async () => {
+    const fetchImpl = vi.fn<typeof fetch>().mockImplementation(
+      async () =>
+        new Response(new Uint8Array([1, 2, 3]), {
+          status: 200,
+          headers: { "Content-Type": "audio/mpeg" },
+        }),
     );
     const adapter = new FishSpeechSynthesis({
       apiKey: "test-key",
       apiUrl: "https://api.fish.audio/v1/tts",
       model: "s2.1-pro-free",
       referenceId: "voice-id",
+      maleReferenceId: "male-voice-id",
       fetchImpl,
     });
 
@@ -90,6 +92,11 @@ describe("external provider adapters", () => {
     expect(result).toMatchObject({ mimeType: "audio/mpeg", provider: "fish-audio" });
     expect(request?.headers).toMatchObject({ model: "s2.1-pro-free" });
     expect(body.reference_id).toBe("voice-id");
+
+    await adapter.synthesize("こんばんは", "male");
+    const maleRequest = fetchImpl.mock.calls[1]?.[1];
+    const maleBody = JSON.parse(String(maleRequest?.body)) as { reference_id?: string };
+    expect(maleBody.reference_id).toBe("male-voice-id");
   });
 
   it("uses the Fish default voice when a reference ID is not configured", async () => {

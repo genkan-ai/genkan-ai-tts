@@ -8,6 +8,7 @@ import type {
   DeliveryPolicy,
   ResidentAutomationSettings,
   ResidentProfile,
+  SpeechVoice,
   VisitEndReason,
   VisitSession,
 } from "./domain/visit";
@@ -41,6 +42,7 @@ interface ResidentController {
   profile: ResidentProfile;
   savingSettings: boolean;
   updateDeliveryPolicy: (policy: DeliveryPolicy) => void | Promise<void>;
+  updateSpeechVoice: (voice: SpeechVoice) => void | Promise<void>;
   savingProfile: boolean;
   updateProfile: (
     profile: Pick<ResidentProfile, "householdName" | "residentNames">,
@@ -144,6 +146,7 @@ const AppShell = ({
             settings={residentController.settings}
             settingsSaving={residentController.savingSettings}
             onDeliveryPolicyChange={residentController.updateDeliveryPolicy}
+            onSpeechVoiceChange={residentController.updateSpeechVoice}
             profile={residentController.profile}
             profileSaving={residentController.savingProfile}
             onProfileSave={residentController.updateProfile}
@@ -161,6 +164,10 @@ const AppShell = ({
             processingPhase={controller.serverVoicePhase}
             audioReadyResponseId={controller.audioReadyResponseId}
             apiError={controller.error}
+            speechVoice={residentController.settings.speechVoice ?? "female"}
+            settingsSaving={residentController.savingSettings}
+            onSpeechVoiceChange={residentController.updateSpeechVoice}
+            onOpenResident={() => setView("resident")}
           />
         )}
       </div>
@@ -182,6 +189,7 @@ const DemoApp = () => {
   const demo = useVisitDemo(runtime);
   const [settings, setSettings] = useState<ResidentAutomationSettings>({
     deliveryPolicy: "notify_only",
+    speechVoice: "female",
     updatedAt: new Date(0).toISOString(),
   });
   const [profile, setProfile] = useState<ResidentProfile>({
@@ -222,7 +230,17 @@ const DemoApp = () => {
     savingSettings: false,
     savingProfile: false,
     updateDeliveryPolicy: (deliveryPolicy) =>
-      setSettings({ deliveryPolicy, updatedAt: new Date().toISOString() }),
+      setSettings((current) => ({
+        ...current,
+        deliveryPolicy,
+        updatedAt: new Date().toISOString(),
+      })),
+    updateSpeechVoice: (speechVoice) =>
+      setSettings((current) => ({
+        ...current,
+        speechVoice,
+        updatedAt: new Date().toISOString(),
+      })),
     updateProfile: (nextProfile) =>
       setProfile({ ...nextProfile, updatedAt: new Date().toISOString() }),
   };

@@ -1,4 +1,5 @@
 import { cleanup, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { VisitSession } from "../domain/visit";
 import { VisitorIntercom } from "./VisitorIntercom";
@@ -28,6 +29,7 @@ describe("VisitorIntercom TTS playback", () => {
   });
 
   it("offers manual playback when browser autoplay is blocked", async () => {
+    const user = userEvent.setup();
     vi.spyOn(HTMLMediaElement.prototype, "play").mockRejectedValue(
       new DOMException("Autoplay blocked", "NotAllowedError"),
     );
@@ -45,7 +47,8 @@ describe("VisitorIntercom TTS playback", () => {
       />,
     );
 
-    expect(await screen.findByRole("button", { name: "AI音声を再生" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "デモ情報" }));
+    expect(await screen.findByRole("button", { name: "生成音声を再生" })).toBeInTheDocument();
   });
 
   it("does not automatically replay the same AI response after remounting", () => {
@@ -90,12 +93,14 @@ describe("VisitorIntercom TTS playback", () => {
     );
 
     expect(pause).not.toHaveBeenCalled();
-    expect(screen.getByText("最後の応答を再生しています")).toBeInTheDocument();
-    expect(screen.getByText("音声の再生が終わるまでお待ちください。")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "新しい呼び出し" })).toBeNull();
+    expect(screen.getByText("応答しています")).toBeInTheDocument();
+    expect(screen.getByText("最終応答中")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "応答中" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "もう一度呼び出す" })).toBeNull();
   });
 
-  it("shows the longer trailing-silence capture window", () => {
+  it("keeps diagnostics hidden until presenter mode is opened", async () => {
+    const user = userEvent.setup();
     render(
       <VisitorIntercom
         session={{ ...session, pendingAudioUrl: undefined }}
@@ -107,8 +112,44 @@ describe("VisitorIntercom TTS playback", () => {
       />,
     );
 
+    expect(screen.getByText("お話しください")).toBeInTheDocument();
+    expect(screen.queryByText("処理パイプライン")).toBeNull();
+    expect(screen.queryByLabelText("テキスト代替入力")).toBeNull();
+
+    await user.click(screen.getByRole("button", { name: "デモ情報" }));
+    expect(screen.getByText("処理パイプライン")).toBeInTheDocument();
     expect(
       screen.getByText(/最大15秒・約1\.5秒の無音で自動送信・無発話が10秒続くと通話終了/),
     ).toBeInTheDocument();
+    expect(screen.getByLabelText("テキスト代替入力")).toBeInTheDocument();
+  });
+
+  it("presents a product-only waiting screen before a call starts", () => {
+    render(
+      <VisitorIntercom onStart={vi.fn()} onSend={vi.fn()} onEnd={vi.fn()} voiceEnabled={false} />,
+    );
+
+    expect(screen.getByText("呼び出してください")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "呼び出す" })).toBeEnabled();
+    expect(screen.queryByText("AI")).toBeNull();
+  });
+
+  it("lets the tester force-end an active call", async () => {
+    const user = userEvent.setup();
+    const onEnd = vi.fn();
+    vi.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(() => undefined);
+    render(
+      <VisitorIntercom
+        session={{ ...session, pendingAudioUrl: undefined }}
+        onStart={vi.fn()}
+        onSend={vi.fn()}
+        onEnd={onEnd}
+        voiceEnabled={false}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "テストを強制終了" }));
+
+    expect(onEnd).toHaveBeenCalledWith("tester_forced");
   });
 });

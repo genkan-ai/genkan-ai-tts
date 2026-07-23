@@ -5,6 +5,7 @@ import type {
   DeliveryPolicy,
   ResidentAutomationSettings,
   ResidentProfile,
+  SpeechVoice,
   VisitSession,
 } from "../domain/visit";
 
@@ -22,6 +23,7 @@ interface ResidentApiState {
 
 const initialSettings: ResidentAutomationSettings = {
   deliveryPolicy: "notify_only",
+  speechVoice: "female",
   updatedAt: new Date(0).toISOString(),
 };
 
@@ -94,13 +96,27 @@ export const useResidentApi = () => {
   const updateDeliveryPolicy = useCallback(async (deliveryPolicy: DeliveryPolicy) => {
     setState((current) => ({ ...current, savingSettings: true, error: undefined }));
     try {
-      const { settings } = await residentApi.updateSettings(deliveryPolicy);
+      const { settings } = await residentApi.updateSettings({ deliveryPolicy });
       setState((current) => ({ ...current, settings, savingSettings: false }));
     } catch (error) {
       setState((current) => ({
         ...current,
         savingSettings: false,
         error: error instanceof Error ? error.message : "配達設定を保存できませんでした。",
+      }));
+    }
+  }, []);
+
+  const updateSpeechVoice = useCallback(async (speechVoice: SpeechVoice) => {
+    setState((current) => ({ ...current, savingSettings: true, error: undefined }));
+    try {
+      const { settings } = await residentApi.updateSettings({ speechVoice });
+      setState((current) => ({ ...current, settings, savingSettings: false }));
+    } catch (error) {
+      setState((current) => ({
+        ...current,
+        savingSettings: false,
+        error: error instanceof Error ? error.message : "応答音声を保存できませんでした。",
       }));
     }
   }, []);
@@ -127,5 +143,5 @@ export const useResidentApi = () => {
     [],
   );
 
-  return { ...state, refresh, updateDeliveryPolicy, updateProfile };
+  return { ...state, refresh, updateDeliveryPolicy, updateSpeechVoice, updateProfile };
 };

@@ -10,6 +10,7 @@ import {
   ShieldQuestion,
   Trash2,
   Users,
+  Volume2,
 } from "lucide-react";
 import { type FormEvent, useId, useRef, useState } from "react";
 import { StatusDot } from "../components/StatusDot";
@@ -22,6 +23,7 @@ import {
   type ResidentAutomationSettings,
   type ResidentProfile,
   riskLabels,
+  type SpeechVoice,
   type VisitSession,
 } from "../domain/visit";
 import { EventTimeline } from "./EventTimeline";
@@ -35,6 +37,7 @@ interface ResidentDashboardProps {
   settings: ResidentAutomationSettings;
   settingsSaving: boolean;
   onDeliveryPolicyChange: (policy: DeliveryPolicy) => void | Promise<void>;
+  onSpeechVoiceChange: (voice: SpeechVoice) => void | Promise<void>;
   profile: ResidentProfile;
   profileSaving: boolean;
   onProfileSave: (
@@ -67,6 +70,11 @@ const deliveryPolicyLabels: Record<DeliveryPolicy, string> = {
   request_redelivery: "再配達を依頼",
 };
 
+const speechVoiceLabels: Record<SpeechVoice, string> = {
+  female: "女性（落ち着いた声）",
+  male: "男性（明瞭で通る声）",
+};
+
 export const ResidentDashboard = ({
   session,
   history,
@@ -75,6 +83,7 @@ export const ResidentDashboard = ({
   settings,
   settingsSaving,
   onDeliveryPolicyChange,
+  onSpeechVoiceChange,
   profile,
   profileSaving,
   onProfileSave,
@@ -105,6 +114,7 @@ export const ResidentDashboard = ({
           settings={settings}
           saving={settingsSaving}
           onChange={onDeliveryPolicyChange}
+          onVoiceChange={onSpeechVoiceChange}
         />
         <ResidentProfileSettings
           key={profile.updatedAt}
@@ -235,6 +245,7 @@ export const ResidentDashboard = ({
         settings={settings}
         saving={settingsSaving}
         onChange={onDeliveryPolicyChange}
+        onVoiceChange={onSpeechVoiceChange}
       />
       <ResidentProfileSettings
         key={profile.updatedAt}
@@ -295,17 +306,19 @@ const DeliverySettings = ({
   settings,
   saving,
   onChange,
+  onVoiceChange,
 }: {
   settings: ResidentAutomationSettings;
   saving: boolean;
   onChange: (policy: DeliveryPolicy) => void | Promise<void>;
+  onVoiceChange: (voice: SpeechVoice) => void | Promise<void>;
 }) => (
   <section className="delivery-settings" aria-labelledby="delivery-settings-title">
     <div>
       <Settings2 size={22} aria-hidden="true" />
       <div>
-        <h2 id="delivery-settings-title">配達時の自動対応</h2>
-        <p>低リスクの配達と判定した場合だけ、この設定を案内します。</p>
+        <h2 id="delivery-settings-title">自動応答設定</h2>
+        <p>配達方針と、インターホンから再生する応答音声を選べます。</p>
       </div>
     </div>
     <label>
@@ -316,6 +329,24 @@ const DeliverySettings = ({
         onChange={(event) => void onChange(event.target.value as DeliveryPolicy)}
       >
         {Object.entries(deliveryPolicyLabels).map(([value, label]) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))}
+      </select>
+    </label>
+    <label>
+      <span>
+        <Volume2 size={14} aria-hidden="true" />
+        応答音声
+      </span>
+      <select
+        aria-label="応答音声"
+        value={settings.speechVoice ?? "female"}
+        disabled={saving}
+        onChange={(event) => void onVoiceChange(event.target.value as SpeechVoice)}
+      >
+        {Object.entries(speechVoiceLabels).map(([value, label]) => (
           <option key={value} value={value}>
             {label}
           </option>

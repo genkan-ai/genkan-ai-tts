@@ -23,6 +23,7 @@ interface SettingsRow {
 
 const defaultSettings = (updatedAt = new Date(0).toISOString()): ResidentAutomationSettings => ({
   deliveryPolicy: "notify_only",
+  speechVoice: "female",
   updatedAt,
 });
 
@@ -143,7 +144,14 @@ export class SqliteStore {
     const row = this.database.prepare("SELECT data FROM resident_settings WHERE id = 1").get() as
       | SettingsRow
       | undefined;
-    return row ? (JSON.parse(row.data) as ResidentAutomationSettings) : defaultSettings();
+    if (!row) return defaultSettings();
+    const settings = JSON.parse(row.data) as Partial<ResidentAutomationSettings>;
+    return {
+      deliveryPolicy: settings.deliveryPolicy ?? "notify_only",
+      speechVoice: settings.speechVoice === "male" ? "male" : "female",
+      updatedAt:
+        typeof settings.updatedAt === "string" ? settings.updatedAt : new Date(0).toISOString(),
+    };
   }
 
   saveResidentSettings(settings: ResidentAutomationSettings): void {

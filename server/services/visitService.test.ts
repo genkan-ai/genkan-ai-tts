@@ -104,7 +104,7 @@ describe("VisitService", () => {
 
   it("persists a selected delivery policy until the conversation goes quiet", async () => {
     const { service, store } = createFixture();
-    service.updateResidentSettings("leave_at_door");
+    service.updateResidentSettings({ deliveryPolicy: "leave_at_door" });
     const started = await service.startVisit();
     const decided = await service.receiveTurn(started.session.id, {
       text: "山田運輸です。荷物のお届けに来ました。",
@@ -123,6 +123,21 @@ describe("VisitService", () => {
       automatedOutcome: "delivery_instructed",
       summary: { appliedDeliveryPolicy: "leave_at_door", completionReason: "inactivity" },
     });
+    service.close();
+    store.close();
+  });
+
+  it("uses the selected response voice for the next synthesis", async () => {
+    const synthesize = vi.fn(async () => undefined);
+    const { service, store } = createFixture(undefined, undefined, {
+      synthesize,
+      health: async () => true,
+    });
+    service.updateResidentSettings({ speechVoice: "male" });
+
+    await service.startVisit();
+
+    expect(synthesize).toHaveBeenCalledWith("はい。ご用件をお伺いします。", "male");
     service.close();
     store.close();
   });
@@ -164,6 +179,34 @@ describe("VisitService", () => {
       automatedOutcome: "ended",
       summary: { completionReason: "visitor_ended" },
     });
+    expect(
+      service
+        .listEvents(started.session.id)
+        .filter((event) => event.type === "notification.requested"),
+    ).toHaveLength(1);
+    service.close();
+    store.close();
+  });
+
+  it("lets a tester force-end immediately without generating another response", async () => {
+    const synthesize = vi.fn(async () => undefined);
+    const { service, store } = createFixture(undefined, undefined, {
+      synthesize,
+      health: async () => true,
+    });
+    const started = await service.startVisit();
+    const transcriptLength = started.session.transcript.length;
+    const synthesisCount = synthesize.mock.calls.length;
+
+    const ended = await service.endVisit(started.session.id, "tester_forced");
+
+    expect(ended.session).toMatchObject({
+      status: "completed",
+      automatedOutcome: "ended",
+      summary: { completionReason: "tester_forced" },
+    });
+    expect(ended.session.transcript).toHaveLength(transcriptLength);
+    expect(synthesize).toHaveBeenCalledTimes(synthesisCount);
     expect(
       service
         .listEvents(started.session.id)

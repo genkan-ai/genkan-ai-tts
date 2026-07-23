@@ -37,12 +37,19 @@ describe("SqliteStore compatibility", () => {
   it("returns safe resident settings by default and persists updates", () => {
     const store = new SqliteStore(":memory:");
 
-    expect(store.getResidentSettings().deliveryPolicy).toBe("notify_only");
+    expect(store.getResidentSettings()).toMatchObject({
+      deliveryPolicy: "notify_only",
+      speechVoice: "female",
+    });
     store.saveResidentSettings({
       deliveryPolicy: "delivery_box",
+      speechVoice: "male",
       updatedAt: "2026-07-21T00:00:00.000Z",
     });
-    expect(store.getResidentSettings()).toMatchObject({ deliveryPolicy: "delivery_box" });
+    expect(store.getResidentSettings()).toMatchObject({
+      deliveryPolicy: "delivery_box",
+      speechVoice: "male",
+    });
     store.close();
   });
 

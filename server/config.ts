@@ -33,6 +33,7 @@ export interface AppConfig {
   fishApiUrl: string;
   fishModel: string;
   fishReferenceId?: string;
+  fishMaleReferenceId?: string;
   childSafetyMode: boolean;
 }
 
@@ -63,6 +64,7 @@ const geminiReasoningEffortFromEnv = (value: string | undefined): GeminiReasonin
 
 export const DEFAULT_FISH_MODEL = "s2.1-pro-free";
 export const DEFAULT_FISH_REFERENCE_ID = "0089dce5fefb4c6ba9b9f2f0debe1ddc";
+export const DEFAULT_FISH_MALE_REFERENCE_ID = "fa7a9c54f30b4cbdba742f77777173b2";
 
 export const loadConfig = (env: NodeJS.ProcessEnv = process.env): AppConfig => ({
   host: "127.0.0.1",
@@ -97,6 +99,8 @@ export const loadConfig = (env: NodeJS.ProcessEnv = process.env): AppConfig => (
   fishApiKey: env.FISH_AUDIO_API_KEY,
   fishApiUrl: env.FISH_AUDIO_API_URL ?? "https://api.fish.audio/v1/tts",
   fishModel: env.FISH_AUDIO_MODEL ?? DEFAULT_FISH_MODEL,
-  fishReferenceId: env.FISH_AUDIO_REFERENCE_ID || DEFAULT_FISH_REFERENCE_ID,
+  fishReferenceId:
+    env.FISH_AUDIO_FEMALE_REFERENCE_ID || env.FISH_AUDIO_REFERENCE_ID || DEFAULT_FISH_REFERENCE_ID,
+  fishMaleReferenceId: env.FISH_AUDIO_MALE_REFERENCE_ID || DEFAULT_FISH_MALE_REFERENCE_ID,
   childSafetyMode: env.CHILD_SAFETY_MODE !== "false",
 });

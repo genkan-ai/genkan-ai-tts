@@ -50,12 +50,17 @@ describe("localhost API", () => {
     const settingsResponse = await app.inject({
       method: "PUT",
       url: "/api/resident/settings",
-      payload: { deliveryPolicy: "delivery_box" },
+      payload: { deliveryPolicy: "delivery_box", speechVoice: "male" },
     });
     const invalidSettingsResponse = await app.inject({
       method: "PUT",
       url: "/api/resident/settings",
       payload: { deliveryPolicy: "custom_free_text" },
+    });
+    const invalidVoiceResponse = await app.inject({
+      method: "PUT",
+      url: "/api/resident/settings",
+      payload: { speechVoice: "robot" },
     });
     const profileBefore = await app.inject({ method: "GET", url: "/api/resident/profile" });
     const profileResponse = await app.inject({
@@ -86,9 +91,10 @@ describe("localhost API", () => {
     expect(startResponse.statusCode).toBe(201);
     expect(residentBefore.json()).toEqual({ visits: [] });
     expect(settingsResponse.json()).toMatchObject({
-      settings: { deliveryPolicy: "delivery_box" },
+      settings: { deliveryPolicy: "delivery_box", speechVoice: "male" },
     });
     expect(invalidSettingsResponse.statusCode).toBe(400);
+    expect(invalidVoiceResponse.statusCode).toBe(400);
     expect(profileBefore.json()).toMatchObject({
       profile: { householdName: "", residentNames: [] },
     });
@@ -125,6 +131,57 @@ describe("localhost API", () => {
     const residentAfter = await app.inject({ method: "GET", url: "/api/resident/visits" });
     expect(residentAfter.json<{ visits: unknown[] }>().visits).toHaveLength(1);
     expect(removedDecisionResponse.statusCode).toBe(404);
+    await app.close();
+  });
+
+  it("accepts the tester force-end reason", async () => {
+    const store = new SqliteStore(":memory:");
+    const audioArtifacts = new AudioArtifactStore();
+    const speechRecognition: SpeechRecognitionPort = {
+      transcribe: async () => ({ text: "", durationMs: 0, provider: "test" }),
+      health: async () => true,
+    };
+    const speechSynthesis: SpeechSynthesisPort = {
+      synthesize: async () => undefined,
+      health: async () => true,
+    };
+    const conversation = new MockConversationTurnService();
+    const service = new VisitService({
+      store,
+      speechRecognition,
+      conversation,
+      speechSynthesis,
+      audioArtifacts,
+      retentionDays: 7,
+      language: "ja",
+      childSafetyMode: true,
+    });
+    const app = await createApp({
+      config: loadConfig({ DATABASE_PATH: ":memory:" }),
+      visitService: service,
+      store,
+      audioArtifacts,
+      providerHealth: {
+        whisper: () => speechRecognition.health(),
+        conversation: () => conversation.health(),
+        speechSynthesis: () => speechSynthesis.health(),
+      },
+    });
+    const started = (
+      await app.inject({ method: "POST", url: "/api/visits" })
+    ).json<VisitMutationResponse>();
+
+    const ended = await app.inject({
+      method: "POST",
+      url: `/api/visits/${started.session.id}/end`,
+      payload: { reason: "tester_forced" },
+    });
+
+    expect(ended.statusCode).toBe(200);
+    expect(ended.json<VisitMutationResponse>().session).toMatchObject({
+      status: "completed",
+      summary: { completionReason: "tester_forced" },
+    });
     await app.close();
   });
 });

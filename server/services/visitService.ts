@@ -9,10 +9,10 @@ import type { VisitEvent, VisitEventPayloads, VisitEventType } from "../../src/d
 import type {
   AutomatedOutcome,
   CompletionReason,
-  DeliveryPolicy,
   ResidentAutomationSettings,
   ResidentProfile,
   Speaker,
+  SpeechVoice,
   TranscriptEntry,
   VisitClassification,
   VisitSession,
@@ -272,6 +272,18 @@ export class VisitService {
     if (terminal(session)) return { session };
     this.cancelTimeout(session.id);
 
+    if (reason === "tester_forced") {
+      const latestAi = [...session.transcript].reverse().find((entry) => entry.speaker === "ai");
+      const { summary, outcome } = this.summaryForEnd(
+        session,
+        "tester_forced",
+        "テスターが会話を強制終了しました",
+        latestAi?.text ?? "テストを終了しました",
+      );
+      this.finalize(session, summary, outcome, "tester_forced", "completed");
+      return { session };
+    }
+
     if (reason === "inactivity") {
       const latestAi = [...session.transcript].reverse().find((entry) => entry.speaker === "ai");
       const { summary, outcome } = this.summaryForEnd(
@@ -324,9 +336,13 @@ export class VisitService {
     return this.store.getResidentSettings();
   }
 
-  updateResidentSettings(deliveryPolicy: DeliveryPolicy): ResidentAutomationSettings {
+  updateResidentSettings(
+    updates: Partial<Pick<ResidentAutomationSettings, "deliveryPolicy" | "speechVoice">>,
+  ): ResidentAutomationSettings {
+    const current = this.getResidentSettings();
     const settings = {
-      deliveryPolicy,
+      deliveryPolicy: updates.deliveryPolicy ?? current.deliveryPolicy,
+      speechVoice: updates.speechVoice ?? current.speechVoice,
       updatedAt: this.timestamp(),
     } satisfies ResidentAutomationSettings;
     this.store.saveResidentSettings(settings);
@@ -386,7 +402,8 @@ export class VisitService {
   private async trySynthesize(text: string, session: VisitSession): Promise<string | undefined> {
     try {
       this.emit(session.id, "voice.phase_changed", { phase: "synthesizing" });
-      const result = await this.speechSynthesis.synthesize(text);
+      const voice: SpeechVoice = this.getResidentSettings().speechVoice ?? "female";
+      const result = await this.speechSynthesis.synthesize(text, voice);
       if (!result) return undefined;
       const id = this.audioArtifacts.put(result.audio, result.mimeType);
       return `/api/audio/${id}`;

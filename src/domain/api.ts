@@ -3,6 +3,7 @@ import type {
   DeliveryPolicy,
   ResidentAutomationSettings,
   ResidentProfile,
+  SpeechVoice,
   VisitEndReason,
   VisitSession,
 } from "./visit";
@@ -35,7 +36,8 @@ export interface ResidentSettingsResponse {
 }
 
 export interface UpdateResidentSettingsRequest {
-  deliveryPolicy: DeliveryPolicy;
+  deliveryPolicy?: DeliveryPolicy;
+  speechVoice?: SpeechVoice;
 }
 
 export interface ResidentProfileResponse {
